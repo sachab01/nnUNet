@@ -37,39 +37,60 @@ def convert_for_submission(source_dir, target_dir):
 
 
 if __name__ == "__main__":
-    base = "/media/fabian/DeepLearningData/SegTHOR"
+    base = "/data/segthor_train"
 
     task_id = 55
     task_name = "SegTHOR"
 
     foldername = "Task%03.0d_%s" % (task_id, task_name)
 
-    out_base = join(nnUNet_raw_data, foldername)
-    imagestr = join(out_base, "imagesTr")
-    imagests = join(out_base, "imagesTs")
-    labelstr = join(out_base, "labelsTr")
+    nnUNet_raw_data = "/Users/sachabuijs/Documents/AI4MI/nnUNet_raw_data"  # Use a directory in your home folder
+    out_base = os.path.join(nnUNet_raw_data, foldername)
+    imagestr = os.path.join(out_base, "imagesTr")
+    imagests = os.path.join(out_base, "imagesTs")
+    labelstr = os.path.join(out_base, "labelsTr")
     maybe_mkdir_p(imagestr)
     maybe_mkdir_p(imagests)
     maybe_mkdir_p(labelstr)
 
     train_patient_names = []
     test_patient_names = []
-    train_patients = subfolders(join(base, "train"), join=False)
-    for p in train_patients:
-        curr = join(base, "train", p)
-        label_file = join(curr, "GT.nii.gz")
-        image_file = join(curr, p + ".nii.gz")
-        shutil.copy(image_file, join(imagestr, p + "_0000.nii.gz"))
-        shutil.copy(label_file, join(labelstr, p + ".nii.gz"))
-        train_patient_names.append(p)
 
-    test_patients = subfiles(join(base, "test"), join=False, suffix=".nii.gz")
-    for p in test_patients:
-        p = p[:-7]
-        curr = join(base, "test")
-        image_file = join(curr, p + ".nii.gz")
-        shutil.copy(image_file, join(imagests, p + "_0000.nii.gz"))
-        test_patient_names.append(p)
+
+    for patient_folder in os.listdir(f"../../..{base}/train"):
+        patient_path = os.path.join(f"../../..{base}/train", patient_folder)
+        if os.path.isdir(patient_path) and patient_folder.startswith("Patient_"):
+            p = patient_folder.split('_')[1]  # Extract patient number
+            label_file = os.path.join(patient_path, "GT.nii.gz")
+            image_file = os.path.join(patient_path, f"Patient_{p}.nii.gz")
+
+            shutil.copy(image_file, join(imagestr, p + "_0000.nii.gz"))
+            shutil.copy(label_file, join(labelstr, p + ".nii.gz"))
+            train_patient_names.append(p)
+
+    # test_patients = subfiles(join(base, "test"), join=False, suffix=".nii.gz")
+    # for p in test_patients:
+    #     p = p[:-7]
+    #     curr = join(base, "test")
+    #     image_file = join(curr, p + ".nii.gz")
+    #     shutil.copy(image_file, join(imagests, p + "_0000.nii.gz"))
+    #     test_patient_names.append(p)
+
+    for patient_folder in os.listdir(f"../../..{base}/test"):
+        patient_path = os.path.join(f"../../..{base}/test", patient_folder)
+        if os.path.isdir(patient_path) and patient_folder.startswith("Patient_"):
+            p = patient_folder.split('_')[1]  # Extract patient number
+            image_file = os.path.join(patient_path, f"Patient_{p}.nii.gz")
+            
+            # # Rename and move ground truth (GT) file
+            # new_gt_filename = f"BRATS_{str(patient_num).zfill(3)}.nii.gz"
+            # shutil.copy(gt_file, os.path.join(dest_dir, "labelsTr", new_gt_filename))
+            
+            # # Rename and move image file for a single modality
+            # new_img_filename = f"BRATS_{str(patient_num).zfill(3)}_0000.nii.gz"
+            # shutil.copy(img_file, os.path.join(dest_dir, "imagesTr", new_img_filename))
+            shutil.copy(image_file, join(imagests, p + "_0000.nii.gz"))
+            test_patient_names.append(p)
 
 
     json_dict = OrderedDict()

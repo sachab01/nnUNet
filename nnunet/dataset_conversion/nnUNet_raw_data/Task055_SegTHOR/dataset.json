@@ -1,0 +1,151 @@
+{
+    "description": "SegTHOR",
+    "labels": {
+        "0": "background",
+        "1": "esophagus",
+        "2": "heart",
+        "3": "trachea",
+        "4": "aorta"
+    },
+    "licence": "see challenge website",
+    "modality": {
+        "0": "CT"
+    },
+    "name": "SegTHOR",
+    "numTest": 11,
+    "numTraining": 29,
+    "reference": "see challenge website",
+    "release": "0.0",
+    "tensorImageSize": "4D",
+    "test": [
+        "./imagesTs/40.nii.gz",
+        "./imagesTs/38.nii.gz",
+        "./imagesTs/36.nii.gz",
+        "./imagesTs/31.nii.gz",
+        "./imagesTs/30.nii.gz",
+        "./imagesTs/37.nii.gz",
+        "./imagesTs/39.nii.gz",
+        "./imagesTs/32.nii.gz",
+        "./imagesTs/35.nii.gz",
+        "./imagesTs/34.nii.gz",
+        "./imagesTs/33.nii.gz"
+    ],
+    "training": [
+        {
+            "image": "./imagesTr/24.nii.gz",
+            "label": "./labelsTr/24.nii.gz"
+        },
+        {
+            "image": "./imagesTr/23.nii.gz",
+            "label": "./labelsTr/23.nii.gz"
+        },
+        {
+            "image": "./imagesTr/15.nii.gz",
+            "label": "./labelsTr/15.nii.gz"
+        },
+        {
+            "image": "./imagesTr/12.nii.gz",
+            "label": "./labelsTr/12.nii.gz"
+        },
+        {
+            "image": "./imagesTr/13.nii.gz",
+            "label": "./labelsTr/13.nii.gz"
+        },
+        {
+            "image": "./imagesTr/14.nii.gz",
+            "label": "./labelsTr/14.nii.gz"
+        },
+        {
+            "image": "./imagesTr/22.nii.gz",
+            "label": "./labelsTr/22.nii.gz"
+        },
+        {
+            "image": "./imagesTr/25.nii.gz",
+            "label": "./labelsTr/25.nii.gz"
+        },
+        {
+            "image": "./imagesTr/07.nii.gz",
+            "label": "./labelsTr/07.nii.gz"
+        },
+        {
+            "image": "./imagesTr/09.nii.gz",
+            "label": "./labelsTr/09.nii.gz"
+        },
+        {
+            "image": "./imagesTr/08.nii.gz",
+            "label": "./labelsTr/08.nii.gz"
+        },
+        {
+            "image": "./imagesTr/01.nii.gz",
+            "label": "./labelsTr/01.nii.gz"
+        },
+        {
+            "image": "./imagesTr/06.nii.gz",
+            "label": "./labelsTr/06.nii.gz"
+        },
+        {
+            "image": "./imagesTr/20.nii.gz",
+            "label": "./labelsTr/20.nii.gz"
+        },
+        {
+            "image": "./imagesTr/27.nii.gz",
+            "label": "./labelsTr/27.nii.gz"
+        },
+        {
+            "image": "./imagesTr/18.nii.gz",
+            "label": "./labelsTr/18.nii.gz"
+        },
+        {
+            "image": "./imagesTr/11.nii.gz",
+            "label": "./labelsTr/11.nii.gz"
+        },
+        {
+            "image": "./imagesTr/16.nii.gz",
+            "label": "./labelsTr/16.nii.gz"
+        },
+        {
+            "image": "./imagesTr/29.nii.gz",
+            "label": "./labelsTr/29.nii.gz"
+        },
+        {
+            "image": "./imagesTr/17.nii.gz",
+            "label": "./labelsTr/17.nii.gz"
+        },
+        {
+            "image": "./imagesTr/28.nii.gz",
+            "label": "./labelsTr/28.nii.gz"
+        },
+        {
+            "image": "./imagesTr/10.nii.gz",
+            "label": "./labelsTr/10.nii.gz"
+        },
+        {
+            "image": "./imagesTr/26.nii.gz",
+            "label": "./labelsTr/26.nii.gz"
+        },
+        {
+            "image": "./imagesTr/19.nii.gz",
+            "label": "./labelsTr/19.nii.gz"
+        },
+        {
+            "image": "./imagesTr/21.nii.gz",
+            "label": "./labelsTr/21.nii.gz"
+        },
+        {
+            "image": "./imagesTr/03.nii.gz",
+            "label": "./labelsTr/03.nii.gz"
+        },
+        {
+            "image": "./imagesTr/04.nii.gz",
+            "label": "./labelsTr/04.nii.gz"
+        },
+        {
+            "image": "./imagesTr/05.nii.gz",
+            "label": "./labelsTr/05.nii.gz"
+        },
+        {
+            "image": "./imagesTr/02.nii.gz",
+            "label": "./labelsTr/02.nii.gz"
+        }
+    ]
+}

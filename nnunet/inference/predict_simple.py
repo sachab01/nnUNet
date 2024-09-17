@@ -216,6 +216,8 @@ def main():
     assert isdir(model_folder_name), "model output folder not found. Expected: %s" % model_folder_name
 
     st = time()
+    input_folder = "/Users/sachabuijs/Documents/AI4MI/nnUNet_raw_data_base/nnUNet_raw_data/Task055_SegTHOR/imagesTs"
+
     predict_from_folder(model_folder_name, input_folder, output_folder, folds, save_npz, num_threads_preprocessing,
                         num_threads_nifti_save, lowres_segmentations, part_id, num_parts, not disable_tta,
                         overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
