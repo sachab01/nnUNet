@@ -147,6 +147,9 @@ def main():
 
     task_name = args.task_name
 
+    input_folder = "/Users/sachabuijs/Documents/AI4MI/nnUNet_raw_data_base/nnUNet_raw_data/Task055_SegTHOR/imagesTs"
+    output_folder = "/Users/sachabuijs/Documents/AI4MI/OUTPUT_DIRECTORY"
+
     if not task_name.startswith("Task"):
         task_id = int(task_name)
         task_name = convert_id_to_task_name(task_id)
@@ -216,7 +219,6 @@ def main():
     assert isdir(model_folder_name), "model output folder not found. Expected: %s" % model_folder_name
 
     st = time()
-    input_folder = "/Users/sachabuijs/Documents/AI4MI/nnUNet_raw_data_base/nnUNet_raw_data/Task055_SegTHOR/imagesTs"
 
     predict_from_folder(model_folder_name, input_folder, output_folder, folds, save_npz, num_threads_preprocessing,
                         num_threads_nifti_save, lowres_segmentations, part_id, num_parts, not disable_tta,

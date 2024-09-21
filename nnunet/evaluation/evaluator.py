@@ -64,7 +64,7 @@ class Evaluator:
                  metrics=None,
                  advanced_metrics=None,
                  nan_for_nonexisting=True):
-
+        print('evaluator init')
         self.test = None
         self.reference = None
         self.confusion_matrix = ConfusionMatrix()
@@ -98,11 +98,12 @@ class Evaluator:
 
     def set_test(self, test):
         """Set the test segmentation."""
-
+        print('evaluator set_test')
         self.test = test
 
     def set_reference(self, reference):
         """Set the reference segmentation."""
+        print('evaluator set_reference')
 
         self.reference = reference
 
@@ -110,6 +111,7 @@ class Evaluator:
         """Set the labels.
         :param labels= may be a dictionary (int->str), a set (of ints), a tuple (of ints) or a list (of ints). Labels
         will only have names if you pass a dictionary"""
+        print('evaluator set_labels')
 
         if isinstance(labels, dict):
             self.labels = collections.OrderedDict(labels)
@@ -124,6 +126,7 @@ class Evaluator:
 
     def construct_labels(self):
         """Construct label set from unique entries in segmentations."""
+        print('evaluator construct_labels')
 
         if self.test is None and self.reference is None:
             raise ValueError("No test or reference segmentations.")
@@ -136,6 +139,7 @@ class Evaluator:
 
     def set_metrics(self, metrics):
         """Set evaluation metrics"""
+        print('evaluator set_metrics')
 
         if isinstance(metrics, set):
             self.metrics = list(metrics)
@@ -145,54 +149,67 @@ class Evaluator:
             raise TypeError("Can only handle list, tuple, set & numpy array, but input is of type {}".format(type(metrics)))
 
     def add_metric(self, metric):
+        print('evaluator add_metric')
 
         if metric not in self.metrics:
             self.metrics.append(metric)
 
     def evaluate(self, test=None, reference=None, advanced=False, **metric_kwargs):
         """Compute metrics for segmentations."""
+        
+        print('evaluator evaluate called')
+        
         if test is not None:
+            print(f'Setting test segmentation: {test}')
             self.set_test(test)
 
         if reference is not None:
+            print(f'Setting reference segmentation: {reference}')
             self.set_reference(reference)
 
         if self.test is None or self.reference is None:
             raise ValueError("Need both test and reference segmentations.")
 
         if self.labels is None:
+            print('No labels found, constructing labels...')
             self.construct_labels()
+        else:
+            print(f'Labels found: {self.labels}')
 
+        print(f'Metrics before sorting: {self.metrics}')
         self.metrics.sort()
+        print(f'Metrics after sorting: {self.metrics}')
 
-        # get functions for evaluation
-        # somewhat convoluted, but allows users to define additonal metrics
-        # on the fly, e.g. inside an IPython console
+        # Get functions for evaluation
         _funcs = {m: ALL_METRICS[m] for m in self.metrics + self.advanced_metrics}
         frames = inspect.getouterframes(inspect.currentframe())
         for metric in self.metrics:
+            print(f'Looking for metric function: {metric}')
             for f in frames:
                 if metric in f[0].f_locals:
                     _funcs[metric] = f[0].f_locals[metric]
+                    print(f'Found metric function for: {metric}')
                     break
             else:
                 if metric in _funcs:
+                    print(f'Using predefined function for metric: {metric}')
                     continue
                 else:
-                    raise NotImplementedError(
-                        "Metric {} not implemented.".format(metric))
-
-        # get results
+                    raise NotImplementedError(f"Metric {metric} not implemented.")
+        
+        # Get results
         self.result = OrderedDict()
 
         eval_metrics = self.metrics
         if advanced:
+            print('Advanced metrics selected.')
             eval_metrics += self.advanced_metrics
 
         if isinstance(self.labels, dict):
-
+            print('Labels are of type dict.')
             for label, name in self.labels.items():
                 k = str(name)
+                print(f'Evaluating label: {k}')
                 self.result[k] = OrderedDict()
                 if not hasattr(label, "__iter__"):
                     self.confusion_matrix.set_test(self.test == label)
@@ -206,25 +223,30 @@ class Evaluator:
                     self.confusion_matrix.set_test(current_test)
                     self.confusion_matrix.set_reference(current_reference)
                 for metric in eval_metrics:
-                    self.result[k][metric] = _funcs[metric](confusion_matrix=self.confusion_matrix,
-                                                               nan_for_nonexisting=self.nan_for_nonexisting,
-                                                               **metric_kwargs)
-
-        else:
-
-            for i, l in enumerate(self.labels):
-                k = str(l)
-                self.result[k] = OrderedDict()
-                self.confusion_matrix.set_test(self.test == l)
-                self.confusion_matrix.set_reference(self.reference == l)
-                for metric in eval_metrics:
+                    print(f'Calculating metric {metric} for label {k}')
                     self.result[k][metric] = _funcs[metric](confusion_matrix=self.confusion_matrix,
                                                             nan_for_nonexisting=self.nan_for_nonexisting,
                                                             **metric_kwargs)
 
-        return self.result
+        else:
+            print('Labels are not a dict.')
+            for i, l in enumerate(self.labels):
+                k = str(l)
+                print(f'Evaluating label: {k}')
+                self.result[k] = OrderedDict()
+                self.confusion_matrix.set_test(self.test == l)
+                self.confusion_matrix.set_reference(self.reference == l)
+                for metric in eval_metrics:
+                    print(f'Calculating metric {metric} for label {k}')
+                    self.result[k][metric] = _funcs[metric](confusion_matrix=self.confusion_matrix,
+                                                            nan_for_nonexisting=self.nan_for_nonexisting,
+                                                            **metric_kwargs)
 
+        print(f'Results: {self.result}')
+        return self.result
+    
     def to_dict(self):
+        print('evaluator to_dict')
 
         if self.result is None:
             self.evaluate()
@@ -232,6 +254,7 @@ class Evaluator:
 
     def to_array(self):
         """Return result as numpy array (labels x metrics)."""
+        print('evaluator to_array')
 
         if self.result is None:
             self.evaluate
@@ -253,6 +276,7 @@ class Evaluator:
 
     def to_pandas(self):
         """Return result as pandas DataFrame."""
+        print('evaluator to_pandas')
 
         a = self.to_array()
 
@@ -269,13 +293,14 @@ class Evaluator:
 class NiftiEvaluator(Evaluator):
 
     def __init__(self, *args, **kwargs):
-
+        print('init')
         self.test_nifti = None
         self.reference_nifti = None
         super(NiftiEvaluator, self).__init__(*args, **kwargs)
 
     def set_test(self, test):
         """Set the test segmentation."""
+        print('set_test')
 
         if test is not None:
             self.test_nifti = sitk.ReadImage(test)
@@ -286,6 +311,7 @@ class NiftiEvaluator(Evaluator):
 
     def set_reference(self, reference):
         """Set the reference segmentation."""
+        print('set_reference')
 
         if reference is not None:
             self.reference_nifti = sitk.ReadImage(reference)
@@ -295,7 +321,7 @@ class NiftiEvaluator(Evaluator):
             super(NiftiEvaluator, self).set_reference(reference)
 
     def evaluate(self, test=None, reference=None, voxel_spacing=None, **metric_kwargs):
-
+        print('evaluate')
         if voxel_spacing is None:
             voxel_spacing = np.array(self.test_nifti.GetSpacing())[::-1]
             metric_kwargs["voxel_spacing"] = voxel_spacing
@@ -304,6 +330,8 @@ class NiftiEvaluator(Evaluator):
 
 
 def run_evaluation(args):
+    print('in run_evaluation')
+
     test, ref, evaluator, metric_kwargs = args
     # evaluate
     evaluator.set_test(test)
@@ -343,6 +371,7 @@ def aggregate_scores(test_ref_pairs,
     :param metric_kwargs:
     :return:
     """
+    print('in aggregate_scores')
 
     if type(evaluator) == type:
         evaluator = evaluator()
@@ -409,6 +438,7 @@ def aggregate_scores_for_experiment(score_file,
                                     json_description="",
                                     json_author="Fabian",
                                     json_task=""):
+    print('in aggregate_scores_for_experiment')
 
     scores = np.load(score_file)
     scores_mean = scores.mean(0)
@@ -451,6 +481,7 @@ def evaluate_folder(folder_with_gts: str, folder_with_predictions: str, labels: 
     :param labels: tuple of int with the labels in the dataset. For example (0, 1, 2, 3) for Task001_BrainTumour.
     :return:
     """
+    print('in evaluate_folder')
     files_gt = subfiles(folder_with_gts, suffix=".nii.gz", join=False)
     files_pred = subfiles(folder_with_predictions, suffix=".nii.gz", join=False)
     assert all([i in files_pred for i in files_gt]), "files missing in folder_with_predictions"
@@ -484,8 +515,21 @@ def nnunet_evaluate_folder():
 
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description="Evaluates segmentations and saves the results to a JSON file.")
+    
+    # Add arguments for reference folder, prediction folder, labels, and advanced metrics
+    parser.add_argument('-ref', '--reference', required=True, type=str, help="Folder containing the reference segmentations in NIfTI format.")
+    parser.add_argument('-pred', '--prediction', required=True, type=str, help="Folder containing the predicted segmentations in NIfTI format.")
+    parser.add_argument('-l', '--labels', nargs='+', type=int, required=True, help="List of label IDs (integer values) that should be evaluated.")
+    parser.add_argument('--advanced', action='store_true', default=False, help="Include advanced metrics in the evaluation.")
+
+    args = parser.parse_args()
+
+    # Pass the arguments to the evaluate_folder function
     evaluate_folder(
-        '/media/isensee/raw_data/nnUNet_raw/Dataset004_Hippocampus/labelsTr',
-        '/home/isensee/drives/checkpoints/nnUNet_results_remake/Dataset999_IntegrationTest_Hippocampus/ensembles/ensemble___nnUNetTrainer_5epochs__nnUNetPlans__3d_cascade_fullres___nnUNetTrainer_5epochs__nnUNetPlans__3d_fullres___0_1_2_3_4',
-        (1, 2), advanced=True
+        folder_with_gts=args.reference,
+        folder_with_predictions=args.prediction,
+        labels=tuple(args.labels),
+        advanced=args.advanced
     )

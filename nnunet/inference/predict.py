@@ -43,6 +43,7 @@ def preprocess_save_to_queue(preprocess_fn, q, list_of_lists, output_files, segs
                              transpose_forward):
     # suppress output
     # sys.stdout = open(os.devnull, 'w')
+    print('in predict/preprocess_save_to_queue')
 
     errors_in = []
     for i, l in enumerate(list_of_lists):
@@ -98,6 +99,8 @@ def preprocess_save_to_queue(preprocess_fn, q, list_of_lists, output_files, segs
 
 
 def preprocess_multithreaded(trainer, list_of_lists, output_files, num_processes=2, segs_from_prev_stage=None):
+    print('in predict/preprocess_multithreaded')
+
     if segs_from_prev_stage is None:
         segs_from_prev_stage = [None] * len(list_of_lists)
 
@@ -156,6 +159,8 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
     :param mixed_precision: if None then we take no action. If True/False we overwrite what the model has in its init
     :return:
     """
+    print('in predict/predict_cases')
+
     assert len(list_of_lists) == len(output_filenames)
     if segs_from_prev_stage is not None: assert len(segs_from_prev_stage) == len(output_filenames)
 
@@ -307,6 +312,8 @@ def predict_cases_fast(model, list_of_lists, output_filenames, folds, num_thread
                        overwrite_existing=False,
                        all_in_gpu=False, step_size=0.5, checkpoint_name="model_final_checkpoint",
                        segmentation_export_kwargs: dict = None, disable_postprocessing: bool = False):
+    print('in predict/predict_cases_fast')
+
     assert len(list_of_lists) == len(output_filenames)
     if segs_from_prev_stage is not None: assert len(segs_from_prev_stage) == len(output_filenames)
 
@@ -454,6 +461,8 @@ def predict_cases_fastest(model, list_of_lists, output_filenames, folds, num_thr
                           num_threads_nifti_save, segs_from_prev_stage=None, do_tta=True, mixed_precision=True,
                           overwrite_existing=False, all_in_gpu=False, step_size=0.5,
                           checkpoint_name="model_final_checkpoint", disable_postprocessing: bool = False):
+    print('in predict/predict_cases_fastest')
+
     assert len(list_of_lists) == len(output_filenames)
     if segs_from_prev_stage is not None: assert len(segs_from_prev_stage) == len(output_filenames)
 
@@ -576,6 +585,7 @@ def predict_cases_fastest(model, list_of_lists, output_filenames, folds, num_thr
 
 
 def check_input_folder_and_return_caseIDs(input_folder, expected_num_modalities):
+    print('in predict/check_input_folder_and_return_caseIDs')
     print("This model expects %d input modalities for each image" % expected_num_modalities)
     files = subfiles(input_folder, suffix=".nii.gz", join=False, sort=True)
 
@@ -636,6 +646,8 @@ def predict_from_folder(model: str, input_folder: str, output_folder: str, folds
     :param overwrite_existing: if not None then it will be overwritten with whatever is in there. None is default (no overwrite)
     :return:
     """
+    print('in predict/predict_from_folder')
+
     maybe_mkdir_p(output_folder)
     shutil.copy(join(model, 'plans.pkl'), output_folder)
 
